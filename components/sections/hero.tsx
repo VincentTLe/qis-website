@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
-import { SITE_CONFIG } from "@/lib/constants";
+import { ChevronDown, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { siteConfig } from "@/data/site";
 import { useMounted } from "@/lib/use-mounted";
 
 export function Hero() {
@@ -13,7 +14,8 @@ export function Hero() {
     <section className="hero-gradient dot-grid relative flex min-h-screen items-center justify-center overflow-hidden px-6">
       {/* Radial glow */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-green/[0.03] blur-[120px]" />
+        <div className="absolute left-1/2 top-1/3 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-blue/[0.04] blur-[120px]" />
+        <div className="absolute left-1/3 top-2/3 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-green/[0.03] blur-[100px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-4xl text-center">
@@ -25,7 +27,7 @@ export function Hero() {
           className="mb-8 font-mono text-xs uppercase tracking-[0.25em] text-text-secondary"
           style={!mounted ? { opacity: 0, transform: "translateY(20px)" } : undefined}
         >
-          {SITE_CONFIG.school} &middot; Established {SITE_CONFIG.established}
+          {siteConfig.school} &middot; Est. {siteConfig.established}
         </motion.p>
 
         {/* Main headline */}
@@ -49,12 +51,10 @@ export function Hero() {
           initial={false}
           animate={mounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.9 }}
-          className="mx-auto mb-10 max-w-xl font-mono text-base leading-relaxed text-text-secondary md:text-lg"
+          className="mx-auto mb-10 max-w-2xl text-base leading-relaxed text-text-secondary md:text-lg"
           style={!mounted ? { opacity: 0, transform: "translateY(20px)" } : undefined}
         >
-          Knox College&apos;s premier {SITE_CONFIG.name}.
-          <br />
-          Algorithms. Markets. Edge.
+          {siteConfig.tagline}
         </motion.p>
 
         {/* CTAs */}
@@ -65,19 +65,20 @@ export function Hero() {
           className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           style={!mounted ? { opacity: 0, transform: "translateY(20px)" } : undefined}
         >
-          <a
-            href="#join"
+          <Link
+            href="/apply"
             className="glow-green inline-flex items-center gap-2 rounded-lg bg-accent-green px-6 py-3 font-mono text-sm font-semibold uppercase tracking-wider text-background transition-all hover:brightness-110"
           >
-            Join Beta
-          </a>
-          <a
-            href="#about"
+            Apply Now
+            <ArrowRight size={16} />
+          </Link>
+          <Link
+            href="/events"
             className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-mono text-sm font-medium uppercase tracking-wider text-text-secondary transition-colors hover:border-border-hover hover:text-text-primary"
           >
-            Learn More
+            Explore Events
             <ChevronDown size={16} />
-          </a>
+          </Link>
         </motion.div>
       </div>
 

@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { AnimatedCounter } from "./animated-counter";
-import { STATS } from "@/lib/constants";
+import { AnimatedCounter } from "@/components/ui/animated-counter";
+import { stats } from "@/data/site";
 
 export function StatsBar() {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
@@ -11,7 +11,7 @@ export function StatsBar() {
   return (
     <section ref={ref} className="border-y border-border bg-background-alt px-6 py-16">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 md:grid-cols-4 md:gap-0 md:divide-x md:divide-border">
-        {STATS.map((stat, i) => (
+        {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={false}

@@ -1,31 +1,17 @@
-import { Navigation } from "@/components/navigation";
-import { Hero } from "@/components/hero";
-import { StatsBar } from "@/components/stats-bar";
-import { About } from "@/components/about";
-import { Philosophy } from "@/components/philosophy";
-import { Curriculum } from "@/components/curriculum";
-import { MeetingFormat } from "@/components/meeting-format";
-import { Roadmap } from "@/components/roadmap";
-import { TechStack } from "@/components/tech-stack";
-import { Team } from "@/components/team";
-import { JoinCTA } from "@/components/join-cta";
-import { Footer } from "@/components/footer";
+import { Hero } from "@/components/sections/hero";
+import { StatsBar } from "@/components/sections/stats-bar";
+import { Pillars } from "@/components/sections/pillars";
+import { FeaturedEvents } from "@/components/sections/featured-events";
+import { JoinCTA } from "@/components/sections/join-cta";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main>
-      <Navigation />
+    <>
       <Hero />
       <StatsBar />
-      <About />
-      <Philosophy />
-      <Curriculum />
-      <MeetingFormat />
-      <Roadmap />
-      <TechStack />
-      <Team />
+      <Pillars />
+      <FeaturedEvents />
       <JoinCTA />
-      <Footer />
-    </main>
+    </>
   );
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Navbar } from "@/components/ui/navbar";
+import { Footer } from "@/components/ui/footer";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -16,13 +18,16 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "QIS — Quantitative Investment Society | Knox College",
+  title: {
+    default: "QIS — Quantitative Investment Society | Knox College",
+    template: "%s | QIS — Quantitative Investment Society",
+  },
   description:
-    "Knox College's premier quantitative finance club. Learn algorithms, build trading systems, compete globally. Join the Beta.",
+    "Knox College's premier quantitative finance club. Learn algorithms, build trading systems, compete globally.",
   openGraph: {
     title: "QIS — Quantitative Investment Society",
     description:
-      "We Learn. We Build. We Compete. Join Knox College's quant finance Beta Launch.",
+      "Where quantitative minds converge. Research. Trade. Compete.",
     url: "https://knoxqis.org",
     siteName: "QIS",
     type: "website",
@@ -30,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "QIS — Quantitative Investment Society | Knox College",
-    description: "We Learn. We Build. We Compete.",
+    description: "Where quantitative minds converge. Research. Trade. Compete.",
   },
 };
 
@@ -41,7 +46,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${instrumentSans.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-background font-sans antialiased">{children}</body>
+      <body className="bg-background font-sans antialiased">
+        <Navbar />
+        <main className="min-h-screen">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }

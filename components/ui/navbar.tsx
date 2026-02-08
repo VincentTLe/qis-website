@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { siteConfig, navLinks } from "@/data/site";
 import { cn } from "@/lib/utils";
 
 function QISLogo() {
   return (
     <div className="flex items-center gap-3">
-      {/* Geometric Q logo */}
       <svg
         width="32"
         height="32"
@@ -41,7 +42,7 @@ function QISLogo() {
         </text>
       </svg>
       <span className="text-lg font-bold tracking-tight text-text-primary">
-        {SITE_CONFIG.shortName}
+        {siteConfig.shortName}
       </span>
       <span className="rounded-full bg-accent-green/10 px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wider text-accent-green">
         Beta
@@ -50,9 +51,10 @@ function QISLogo() {
   );
 }
 
-export function Navigation() {
+export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     function handleScroll() {
@@ -73,6 +75,16 @@ export function Navigation() {
     };
   }, [mobileOpen]);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  }
+
   return (
     <>
       <nav
@@ -84,29 +96,34 @@ export function Navigation() {
         )}
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <a href="#" className="relative z-50">
+          <Link href="/" className="relative z-50">
             <QISLogo />
-          </a>
+          </Link>
 
           {/* Desktop links */}
           <div className="hidden items-center gap-8 md:flex">
-            {NAV_LINKS.map((link) =>
-              link.label === "Join" ? (
-                <a
+            {navLinks.map((link) =>
+              link.label === "Apply" ? (
+                <Link
                   key={link.href}
                   href={link.href}
                   className="rounded-lg border border-accent-green/30 px-4 py-1.5 font-mono text-sm text-accent-green transition-colors hover:border-accent-green hover:bg-accent-green/10"
                 >
-                  {link.label}
-                </a>
+                  Apply Now
+                </Link>
               ) : (
-                <a
+                <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm text-text-secondary transition-colors hover:text-text-primary"
+                  className={cn(
+                    "text-sm transition-colors",
+                    isActive(link.href)
+                      ? "text-text-primary font-medium"
+                      : "text-text-secondary hover:text-text-primary"
+                  )}
                 >
                   {link.label}
-                </a>
+                </Link>
               )
             )}
           </div>
@@ -114,7 +131,7 @@ export function Navigation() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="relative z-50 p-2 text-text-secondary md:hidden"
+            className="relative z-50 p-2 text-text-secondary md:hidden cursor-pointer"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
@@ -132,23 +149,27 @@ export function Navigation() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-background/95 backdrop-blur-xl md:hidden"
           >
-            {NAV_LINKS.map((link, i) => (
-              <motion.a
+            {navLinks.map((link, i) => (
+              <motion.div
                 key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 + 0.1 }}
-                className={cn(
-                  "text-2xl font-medium",
-                  link.label === "Join"
-                    ? "text-accent-green"
-                    : "text-text-primary"
-                )}
               >
-                {link.label}
-              </motion.a>
+                <Link
+                  href={link.href}
+                  className={cn(
+                    "text-2xl font-medium",
+                    link.label === "Apply"
+                      ? "text-accent-green"
+                      : isActive(link.href)
+                        ? "text-text-primary"
+                        : "text-text-secondary"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              </motion.div>
             ))}
           </motion.div>
         )}
