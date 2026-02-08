@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #050508;
+  --color-background-alt: #0a0a12;
+  --color-surface: #111118;
+  --color-surface-hover: #16161f;
+  --color-border: #1e1e2a;
+  --color-border-hover: #2a2a3a;
+
+  --color-text-primary: #f0f0f5;
+  --color-text-secondary: #8888a0;
+  --color-text-tertiary: #55556a;
+
+  --color-accent-green: #00e87b;
+  --color-accent-green-dim: oklch(0.7 0.2 155 / 0.1);
+  --color-accent-blue: #3b82f6;
+  --color-accent-blue-dim: oklch(0.6 0.2 260 / 0.1);
+
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+  background-color: #050508;
+}
+
+body {
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-hover);
+  border-radius: 3px;
+}
+
+/* Selection styling */
+::selection {
+  background: oklch(0.7 0.2 155 / 0.3);
+  color: var(--color-text-primary);
+}
+
+/* Ambient hero gradient animation */
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    #050508 0%,
+    #0a0a18 25%,
+    #0d0d1a 50%,
+    #080814 75%,
+    #050508 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* Dot grid pattern */
+.dot-grid {
+  background-image: radial-gradient(
+    circle,
+    rgba(136, 136, 160, 0.12) 1px,
+    transparent 1px
+  );
+  background-size: 32px 32px;
+}
+
+/* Glow effects */
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 232, 123, 0.15),
+    0 0 60px rgba(0, 232, 123, 0.05);
+}
+
+/* Pulse animation for timeline dot */
+@keyframes pulse-green {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 232, 123, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 232, 123, 0);
+  }
+}
+
+.pulse-dot {
+  animation: pulse-green 2s ease-in-out infinite;
+}
+
+/* Scroll indicator bounce */
+@keyframes gentle-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.scroll-bounce {
+  animation: gentle-bounce 2s ease-in-out infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero-gradient {
+    animation: none;
+  }
+
+  .pulse-dot {
+    animation: none;
+  }
+
+  .scroll-bounce {
+    animation: none;
+  }
+}
