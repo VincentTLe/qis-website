@@ -66,10 +66,10 @@ export function Hero() {
           style={!mounted ? { opacity: 0, transform: "translateY(20px)" } : undefined}
         >
           <Link
-            href="/apply"
+            href="/join"
             className="glow-green inline-flex items-center gap-2 rounded-lg bg-accent-green px-6 py-3 font-mono text-sm font-semibold uppercase tracking-wider text-background transition-all hover:brightness-110"
           >
-            Apply Now
+            Join QIS
             <ArrowRight size={16} />
           </Link>
           <Link

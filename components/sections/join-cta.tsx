@@ -34,10 +34,10 @@ export function JoinCTA() {
         </p>
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
-            href="/apply"
+            href="/join"
             className="glow-green inline-flex items-center gap-2 rounded-lg bg-accent-green px-8 py-3.5 font-mono text-sm font-semibold uppercase tracking-wider text-background transition-all hover:brightness-110"
           >
-            Apply Now
+            Join QIS
             <ArrowRight size={16} />
           </Link>
           <Link

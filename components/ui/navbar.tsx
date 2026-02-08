@@ -103,13 +103,13 @@ export function Navbar() {
           {/* Desktop links */}
           <div className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) =>
-              link.label === "Apply" ? (
+              link.label === "Join" ? (
                 <Link
                   key={link.href}
                   href={link.href}
                   className="rounded-lg border border-accent-green/30 px-4 py-1.5 font-mono text-sm text-accent-green transition-colors hover:border-accent-green hover:bg-accent-green/10"
                 >
-                  Apply Now
+                  Join
                 </Link>
               ) : (
                 <Link
@@ -160,7 +160,7 @@ export function Navbar() {
                   href={link.href}
                   className={cn(
                     "text-2xl font-medium",
-                    link.label === "Apply"
+                    link.label === "Join"
                       ? "text-accent-green"
                       : isActive(link.href)
                         ? "text-text-primary"

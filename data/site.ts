@@ -11,28 +11,30 @@ export const siteConfig = {
   github: "https://github.com/VincentTLe/qis-website",
   linkedin: "#",
   instagram: "#",
-  applyUrl: "/apply",
+  applyUrl: "#",
   url: "https://knoxqis.org",
 };
 
 export const navLinks = [
-  { label: "About", href: "/about" },
   { label: "Events", href: "/events" },
+  { label: "Games", href: "/games" },
+  { label: "Competition", href: "/competition" },
   { label: "Team", href: "/team" },
-  { label: "Research", href: "/research" },
-  { label: "Apply", href: "/apply" },
+  { label: "Join", href: "/join" },
 ];
 
 export const footerLinks = {
   pages: [
     { label: "Home", href: "/" },
-    { label: "About", href: "/about" },
     { label: "Events", href: "/events" },
+    { label: "Games", href: "/games" },
+    { label: "Competition", href: "/competition" },
     { label: "Team", href: "/team" },
-    { label: "Research", href: "/research" },
   ],
   resources: [
-    { label: "Apply Now", href: "/apply" },
+    { label: "Join QIS", href: "/join" },
+    { label: "About", href: "/about" },
+    { label: "Research", href: "/research" },
     { label: "Contact", href: "/contact" },
     { label: "GitHub", href: "https://github.com/VincentTLe/qis-website" },
   ],
