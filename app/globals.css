@@ -176,3 +176,12 @@ body {
     animation: none;
   }
 }
+
+/* Projector mode: hide site chrome */
+body.projector-mode nav,
+body.projector-mode footer {
+  display: none !important;
+}
+body.projector-mode main {
+  min-height: 100vh;
+}

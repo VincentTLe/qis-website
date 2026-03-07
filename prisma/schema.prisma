@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  name      String
+  phase     String    @default("lobby")
+  phaseOpen Boolean   @default(false)
+  config    Json      @default("{}")
+  createdAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  teams       Team[]
+  players     Player[]
+  submissions Submission[]
+}
+
+model Team {
+  id        String  @id @default(uuid())
+  sessionId String
+  teamCode  String
+  teamName  String
+  color     String?
+  maxSize   Int     @default(4)
+  sortOrder Int     @default(0)
+
+  session Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  players Player[]
+
+  @@unique([sessionId, teamCode])
+}
+
+model Player {
+  id          String  @id @default(uuid())
+  sessionId   String
+  teamId      String
+  playerCode  String
+  displayName String?
+  token       String  @unique @default(uuid())
+
+  session     Session      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  team        Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@unique([sessionId, playerCode])
+}
+
+model Submission {
+  id               String   @id @default(uuid())
+  sessionId        String
+  playerId         String
+  playerCode       String
+  phase            String
+  type             String
+  amount           Int?
+  auditChoice      String?
+  targetPlayerCode String?
+  submittedAt      DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  player  Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, phase])
+  @@index([sessionId, playerCode])
+}

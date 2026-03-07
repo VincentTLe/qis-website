@@ -117,6 +117,13 @@ export const gamesList: GameMeta[] = [
     available: true,
   },
   {
+    slug: "heist",
+    name: "The Heist",
+    description: "Live multiplayer public-goods game. Contribute, betray, and audit your way to victory.",
+    icon: "heist",
+    available: true,
+  },
+  {
     slug: "trading-estimation",
     name: "Trading Estimation",
     description: "Estimate fair values under uncertainty. Coming soon.",

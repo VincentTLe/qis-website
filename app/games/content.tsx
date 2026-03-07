@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Calculator, Dice5, TrendingUp, Trophy } from "lucide-react";
+import { Calculator, Dice5, TrendingUp, Trophy, Swords } from "lucide-react";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { gamesList } from "@/data/games";
@@ -14,6 +15,7 @@ const iconMap: Record<string, typeof Calculator> = {
   calculator: Calculator,
   dice: Dice5,
   "trending-up": TrendingUp,
+  heist: Swords,
 };
 
 export function GamesContent() {
@@ -35,7 +37,27 @@ export function GamesContent() {
                   animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                 >
-                  {game.available ? (
+                  {game.available && game.slug === "heist" ? (
+                    <Link
+                      href="/games/heist"
+                      className="block w-full text-left cursor-pointer"
+                    >
+                      <Card className="flex h-full flex-col items-center p-8 text-center">
+                        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-green/10">
+                          <Icon size={32} className="text-accent-green" />
+                        </div>
+                        <h3 className="mb-2 text-xl font-bold text-text-primary">
+                          {game.name}
+                        </h3>
+                        <p className="mb-4 text-sm leading-relaxed text-text-secondary">
+                          {game.description}
+                        </p>
+                        <span className="mt-auto inline-flex items-center rounded-lg bg-accent-green/10 px-4 py-2 font-mono text-xs uppercase tracking-wider text-accent-green">
+                          Enter Game
+                        </span>
+                      </Card>
+                    </Link>
+                  ) : game.available ? (
                     <button
                       onClick={() => setActiveGame(game.slug)}
                       className="block w-full text-left cursor-pointer"
