@@ -107,13 +107,18 @@ function JoinScreen({ onJoined }: { onJoined: (token: string, info: PlayerInfo) 
     if (!name.trim()) return;
     setJoining(true);
     setError(null);
-    const res = await joinGame(name.trim());
-    if (res.ok) {
-      onJoined(res.token, res);
-    } else {
-      setError(res.error ?? "Failed to join");
+    try {
+      const res = await joinGame(name.trim());
+      if (res.ok) {
+        onJoined(res.token, res);
+      } else {
+        setError(res.error ?? "Failed to join");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Connection failed");
+    } finally {
+      setJoining(false);
     }
-    setJoining(false);
   }
 
   return (
@@ -209,19 +214,25 @@ function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo:
   async function handleContribution() {
     if (selectedAmount === null) return;
     setSubmitting(true);
-    const res = await submitAction({ amount: selectedAmount }, token);
-    setSubmitting(false);
-    if (res.ok) setJustSubmitted(true);
+    try {
+      const res = await submitAction({ amount: selectedAmount }, token);
+      if (res.ok) setJustSubmitted(true);
+    } catch { /* ignore */ } finally {
+      setSubmitting(false);
+    }
   }
 
   async function handleAudit() {
     setSubmitting(true);
-    const res = await submitAction({
-      auditChoice,
-      targetPlayerCode: auditChoice === "audit_someone" ? auditTarget : undefined,
-    }, token);
-    setSubmitting(false);
-    if (res.ok) setJustSubmitted(true);
+    try {
+      const res = await submitAction({
+        auditChoice,
+        targetPlayerCode: auditChoice === "audit_someone" ? auditTarget : undefined,
+      }, token);
+      if (res.ok) setJustSubmitted(true);
+    } catch { /* ignore */ } finally {
+      setSubmitting(false);
+    }
   }
 
   return (

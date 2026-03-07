@@ -69,17 +69,22 @@ function AdminDashboard({ adminKey }: { adminKey: string }) {
   async function doAction(action: string, body: Record<string, unknown> = {}) {
     setBusy(true);
     setActionError(null);
-    const res = await adminAction(action, adminKey, body);
-    if (res.error) {
-      if (res.error === "Unauthorized") {
-        sessionStorage.removeItem("heist-admin-key");
-        window.location.reload();
-        return;
+    try {
+      const res = await adminAction(action, adminKey, body);
+      if (res.error) {
+        if (res.error === "Unauthorized") {
+          sessionStorage.removeItem("heist-admin-key");
+          window.location.reload();
+          return;
+        }
+        setActionError(res.error);
       }
-      setActionError(res.error);
+      await refresh();
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Request failed — check connection");
+    } finally {
+      setBusy(false);
     }
-    await refresh();
-    setBusy(false);
   }
 
   const session = data?.session ?? null;
