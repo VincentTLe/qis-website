@@ -19,34 +19,18 @@ export function AdminContent() {
   const [adminKey, setAdminKey] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [keyInput, setKeyInput] = useState("");
-  const [authError, setAuthError] = useState("");
-  const [checking, setChecking] = useState(false);
-
-  async function verifyKey(key: string) {
-    setChecking(true);
-    setAuthError("");
-    // Test the key with a harmless export action
-    const res = await adminAction("export", key);
-    setChecking(false);
-    if (res.error === "Unauthorized") {
-      setAuthError("Wrong admin key");
-      sessionStorage.removeItem("heist-admin-key");
-      return;
-    }
-    if (res.error === "Server configuration error") {
-      setAuthError("Server error: HEIST_ADMIN_KEY not configured");
-      return;
-    }
-    setAdminKey(key);
-    sessionStorage.setItem("heist-admin-key", key);
-    setAuthenticated(true);
-  }
 
   useEffect(() => {
     const stored = sessionStorage.getItem("heist-admin-key");
-    if (stored) verifyKey(stored);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (stored) { setAdminKey(stored); setAuthenticated(true); }
   }, []);
+
+  function login() {
+    if (!keyInput) return;
+    setAdminKey(keyInput);
+    sessionStorage.setItem("heist-admin-key", keyInput);
+    setAuthenticated(true);
+  }
 
   if (!authenticated) {
     return (
@@ -57,18 +41,17 @@ export function AdminContent() {
           <input
             type="password"
             value={keyInput}
-            onChange={(e) => { setKeyInput(e.target.value); setAuthError(""); }}
+            onChange={(e) => setKeyInput(e.target.value)}
             placeholder="Admin key"
             className="mb-4 w-full rounded-xl border border-border bg-surface px-4 py-3 text-center font-mono text-text-primary placeholder:text-text-tertiary focus:border-accent-blue focus:outline-none"
-            onKeyDown={(e) => { if (e.key === "Enter" && keyInput) verifyKey(keyInput); }}
+            onKeyDown={(e) => { if (e.key === "Enter") login(); }}
           />
-          {authError && <p className="mb-3 text-sm font-semibold text-red-400">{authError}</p>}
           <button
-            onClick={() => { if (keyInput) verifyKey(keyInput); }}
-            disabled={checking || !keyInput}
+            onClick={login}
+            disabled={!keyInput}
             className="w-full cursor-pointer rounded-xl bg-accent-blue px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            {checking ? "Verifying..." : "Enter"}
+            Enter
           </button>
         </div>
       </section>
@@ -87,7 +70,14 @@ function AdminDashboard({ adminKey }: { adminKey: string }) {
     setBusy(true);
     setActionError(null);
     const res = await adminAction(action, adminKey, body);
-    if (res.error) setActionError(res.error);
+    if (res.error) {
+      if (res.error === "Unauthorized") {
+        sessionStorage.removeItem("heist-admin-key");
+        window.location.reload();
+        return;
+      }
+      setActionError(res.error);
+    }
     await refresh();
     setBusy(false);
   }
