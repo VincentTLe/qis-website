@@ -126,21 +126,21 @@ export function getLeaderboard(session: GameSession) {
 
 function getCompletedRounds(session: GameSession): (1 | 2 | 3)[] {
   const { phase } = session;
-  // A round's contribution is "complete" once we've moved past it
+  // A round is "scoreable" once we're at or past its contribution phase
   const rounds: (1 | 2 | 3)[] = [];
   const order = ['r1-contribution', 'r2-contribution', 'r2-audit', 'r3-contribution', 'r3-audit', 'results'];
   const idx = order.indexOf(phase);
 
-  if (idx >= 1) rounds.push(1); // past r1-contribution
-  if (idx >= 2) rounds.push(2); // past r2-contribution
-  if (idx >= 4) rounds.push(3); // past r3-contribution
+  if (idx >= 0) rounds.push(1); // at or past r1-contribution
+  if (idx >= 1) rounds.push(2); // at or past r2-contribution
+  if (idx >= 3) rounds.push(3); // at or past r3-contribution
 
   return rounds;
 }
 
 export function getSubmissionCounts(session: GameSession) {
   const { phase, players } = session;
-  const expected = players.length;
+  const expected = players.filter(p => p.displayName).length;
 
   // Count unique players who submitted for current phase (latest per player)
   const submitted = new Set(

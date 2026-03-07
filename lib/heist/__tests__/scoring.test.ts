@@ -390,12 +390,13 @@ describe('TC9: Partial game — only round 1 completed', () => {
   addContribution(session, 'A1', 1, 6000);
   addContribution(session, 'A2', 1, 4000);
 
-  // Only round 1 should be scored (we're at r2-contribution, meaning r1 is complete)
+  // At r2-contribution: both round 1 and 2 are scoreable
+  // Round 2 has no submissions yet, so everyone keeps endowment
   const total = calculatePlayerScore(session, 'A1');
-  assert(total.rounds.length === 1, 'TC9: Only 1 round scored');
-  // Team total = 10000, pool = 15000, share = 7500
-  // A1: 10000 - 6000 + 7500 = 11500
-  assertApprox(total.totalWealth, 11500, 0.01, 'TC9: A1 partial game total = 11500');
+  assert(total.rounds.length === 2, 'TC9: 2 rounds scoreable at r2-contribution');
+  // R1: team total=10000, pool=15000, share=7500, A1=10000-6000+7500=11500
+  // R2: no submissions, team total=0, pool=0, share=0, A1=10000-0+0=10000
+  assertApprox(total.totalWealth, 21500, 0.01, 'TC9: A1 partial game total = 21500');
 });
 
 // =====================================================
