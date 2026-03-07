@@ -19,10 +19,33 @@ export function AdminContent() {
   const [adminKey, setAdminKey] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [keyInput, setKeyInput] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [checking, setChecking] = useState(false);
+
+  async function verifyKey(key: string) {
+    setChecking(true);
+    setAuthError("");
+    // Test the key with a harmless export action
+    const res = await adminAction("export", key);
+    setChecking(false);
+    if (res.error === "Unauthorized") {
+      setAuthError("Wrong admin key");
+      sessionStorage.removeItem("heist-admin-key");
+      return;
+    }
+    if (res.error === "Server configuration error") {
+      setAuthError("Server error: HEIST_ADMIN_KEY not configured");
+      return;
+    }
+    setAdminKey(key);
+    sessionStorage.setItem("heist-admin-key", key);
+    setAuthenticated(true);
+  }
 
   useEffect(() => {
     const stored = sessionStorage.getItem("heist-admin-key");
-    if (stored) { setAdminKey(stored); setAuthenticated(true); }
+    if (stored) verifyKey(stored);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!authenticated) {
@@ -34,22 +57,18 @@ export function AdminContent() {
           <input
             type="password"
             value={keyInput}
-            onChange={(e) => setKeyInput(e.target.value)}
+            onChange={(e) => { setKeyInput(e.target.value); setAuthError(""); }}
             placeholder="Admin key"
             className="mb-4 w-full rounded-xl border border-border bg-surface px-4 py-3 text-center font-mono text-text-primary placeholder:text-text-tertiary focus:border-accent-blue focus:outline-none"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && keyInput) {
-                setAdminKey(keyInput);
-                sessionStorage.setItem("heist-admin-key", keyInput);
-                setAuthenticated(true);
-              }
-            }}
+            onKeyDown={(e) => { if (e.key === "Enter" && keyInput) verifyKey(keyInput); }}
           />
+          {authError && <p className="mb-3 text-sm font-semibold text-red-400">{authError}</p>}
           <button
-            onClick={() => { if (keyInput) { setAdminKey(keyInput); sessionStorage.setItem("heist-admin-key", keyInput); setAuthenticated(true); } }}
-            className="w-full cursor-pointer rounded-xl bg-accent-blue px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90"
+            onClick={() => { if (keyInput) verifyKey(keyInput); }}
+            disabled={checking || !keyInput}
+            className="w-full cursor-pointer rounded-xl bg-accent-blue px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            Enter
+            {checking ? "Verifying..." : "Enter"}
           </button>
         </div>
       </section>
@@ -62,18 +81,20 @@ export function AdminContent() {
 function AdminDashboard({ adminKey }: { adminKey: string }) {
   const { data, refresh } = useHeistPoll<AdminState>("/api/heist/state?role=admin", 2000);
   const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   async function doAction(action: string, body: Record<string, unknown> = {}) {
     setBusy(true);
+    setActionError(null);
     const res = await adminAction(action, adminKey, body);
-    if (res.error) alert(res.error);
+    if (res.error) setActionError(res.error);
     await refresh();
     setBusy(false);
   }
 
   const session = data?.session ?? null;
 
-  if (!session) return <SetupPanel onAction={doAction} busy={busy} />;
+  if (!session) return <SetupPanel onAction={doAction} busy={busy} error={actionError} />;
 
   const isLobby = session.phase === "lobby";
   const joinedPlayers = session.players.filter(p => p.displayName);
@@ -98,6 +119,13 @@ function AdminDashboard({ adminKey }: { adminKey: string }) {
             )}
           </div>
         </div>
+
+        {/* Error banner */}
+        {actionError && (
+          <div className="mb-4 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm font-semibold text-red-400">
+            {actionError}
+          </div>
+        )}
 
         {/* Phase Controls */}
         <div className="mb-6 glass-card rounded-xl p-4">
@@ -305,7 +333,7 @@ function AdminDashboard({ adminKey }: { adminKey: string }) {
   );
 }
 
-function SetupPanel({ onAction, busy }: { onAction: (action: string, body?: Record<string, unknown>) => void; busy: boolean }) {
+function SetupPanel({ onAction, busy, error }: { onAction: (action: string, body?: Record<string, unknown>) => void; busy: boolean; error?: string | null }) {
   const [sessionName, setSessionName] = useState("The Heist");
   const [teamCount, setTeamCount] = useState(4);
   const [teamSize, setTeamSize] = useState(4);
@@ -370,6 +398,12 @@ function SetupPanel({ onAction, busy }: { onAction: (action: string, body?: Reco
             <p className="text-center font-mono text-sm text-text-secondary">
               {teamCount * teamSize} player slots — Players will auto-join via lobby
             </p>
+
+            {error && (
+              <div className="rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm font-semibold text-red-400">
+                {error}
+              </div>
+            )}
 
             <button
               onClick={handleCreate}
