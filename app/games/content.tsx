@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Calculator, Dice5, TrendingUp, Trophy, Swords } from "lucide-react";
+import { Calculator, Dice5, TrendingUp, Trophy, Swords, Target } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ const iconMap: Record<string, typeof Calculator> = {
   dice: Dice5,
   "trending-up": TrendingUp,
   heist: Swords,
+  target: Target,
 };
 
 export function GamesContent() {
@@ -37,9 +38,9 @@ export function GamesContent() {
                   animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                 >
-                  {game.available && game.slug === "heist" ? (
+                  {game.available && (game.slug === "heist" || game.slug === "beauty-contest") ? (
                     <Link
-                      href="/games/heist"
+                      href={`/games/${game.slug}`}
                       className="block w-full text-left cursor-pointer"
                     >
                       <Card className="flex h-full flex-col items-center p-8 text-center">

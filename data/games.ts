@@ -124,6 +124,13 @@ export const gamesList: GameMeta[] = [
     available: true,
   },
   {
+    slug: "beauty-contest",
+    name: "Keynesian Beauty Contest",
+    description: "Everyone picks 0-100. Closest to two-thirds of the room average wins.",
+    icon: "target",
+    available: true,
+  },
+  {
     slug: "trading-estimation",
     name: "Trading Estimation",
     description: "Estimate fair values under uncertainty. Coming soon.",
