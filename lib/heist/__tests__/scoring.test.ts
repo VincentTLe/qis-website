@@ -386,18 +386,32 @@ describe('TC8: Duplicate submissions — last one counts', () => {
 });
 
 // =====================================================
-// TEST CASE 9: Partial rounds — game ended mid-way
+// TEST CASE 9: Round 2 becomes visible after contribution closes, final after audit closes
 // =====================================================
-describe('TC9: Partial game — round 2 is not final until audit closes', () => {
-  const session = makeSession({ phase: 'r2-contribution' as Phase });
+describe('TC9: Round 2 shows after contribution closes and finalizes after audit closes', () => {
+  const session = makeSession({ phase: 'r2-contribution' as Phase, phaseOpen: false });
   addTeam(session, 'A', 'Alpha', 2);
   addContribution(session, 'A1', 1, 6000);
   addContribution(session, 'A2', 1, 4000);
+  addContribution(session, 'A1', 2, 10000);
+  addContribution(session, 'A2', 2, 0);
 
-  // At r2-contribution, only round 1 is complete.
+  // Once round 2 contribution closes, round 2 should be visible immediately.
   const total = calculatePlayerScore(session, 'A1');
-  assert(total.rounds.length === 1, 'TC9: Only round 1 is scoreable at r2-contribution');
-  assertApprox(total.totalWealth, 11500, 0.01, 'TC9: A1 partial game total = 11500');
+  assert(total.rounds.length === 2, 'TC9: Round 2 is scoreable once contribution closes');
+  assertApprox(total.totalWealth, 19000, 0.01, 'TC9: A1 shows provisional round 2 total before audit resolves');
+
+  const auditOpen = makeSession({ phase: 'r2-audit' as Phase, phaseOpen: true });
+  addTeam(auditOpen, 'A', 'Alpha', 2);
+  addContribution(auditOpen, 'A1', 1, 6000);
+  addContribution(auditOpen, 'A2', 1, 4000);
+  addContribution(auditOpen, 'A1', 2, 10000);
+  addContribution(auditOpen, 'A2', 2, 0);
+  addAudit(auditOpen, 'A1', 2, 'audit_someone', 'A2');
+  addAudit(auditOpen, 'A2', 2, 'no_audit');
+
+  const duringAudit = calculatePlayerScore(auditOpen, 'A1');
+  assertApprox(duringAudit.totalWealth, 19000, 0.01, 'TC9: Audit submissions do not change total until audit closes');
 
   const auditClosed = makeSession({ phase: 'r2-audit' as Phase, phaseOpen: false });
   addTeam(auditClosed, 'A', 'Alpha', 2);
@@ -409,7 +423,8 @@ describe('TC9: Partial game — round 2 is not final until audit closes', () => 
   addAudit(auditClosed, 'A2', 2, 'no_audit');
 
   const completedAfterAudit = calculatePlayerScore(auditClosed, 'A1');
-  assert(completedAfterAudit.rounds.length === 2, 'TC9: Round 2 becomes scoreable after audit closes');
+  assert(completedAfterAudit.rounds.length === 2, 'TC9: Round 2 stays scoreable after audit closes');
+  assertApprox(completedAfterAudit.totalWealth, 31500, 0.01, 'TC9: Audit-closed total includes final audit effects');
 });
 
 // =====================================================

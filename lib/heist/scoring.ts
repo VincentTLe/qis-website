@@ -134,6 +134,18 @@ function getRoundAuditOutcome(
   };
 }
 
+function isAuditResolved(session: GameSession, round: 2 | 3) {
+  const { phase, phaseOpen } = session;
+
+  if (round === 2) {
+    if (phase === 'r2-audit') return !phaseOpen;
+    return phase === 'r3-contribution' || phase === 'r3-audit' || phase === 'results';
+  }
+
+  if (phase === 'r3-audit') return !phaseOpen;
+  return phase === 'results';
+}
+
 function isRoundCompleted(session: GameSession, round: 1 | 2 | 3) {
   const { phase, phaseOpen } = session;
 
@@ -143,11 +155,13 @@ function isRoundCompleted(session: GameSession, round: 1 | 2 | 3) {
   }
 
   if (round === 2) {
-    if (phase === 'r2-audit') return !phaseOpen;
+    if (phase === 'r2-contribution') return !phaseOpen;
+    if (phase === 'r2-audit') return true;
     return phase === 'r3-contribution' || phase === 'r3-audit' || phase === 'results';
   }
 
-  if (phase === 'r3-audit') return !phaseOpen;
+  if (phase === 'r3-contribution') return !phaseOpen;
+  if (phase === 'r3-audit') return true;
   return phase === 'results';
 }
 
@@ -189,7 +203,7 @@ export function calculatePlayerRound(
   let auditsReceived = 0;
   let successfulAudits = 0;
 
-  if (round === 2 || round === 3) {
+  if ((round === 2 || round === 3) && isAuditResolved(session, round)) {
     const auditPhase = auditPhaseForRound(round);
     const { auditCost } = getAuditSettings(session);
 
