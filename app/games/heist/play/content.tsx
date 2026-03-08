@@ -164,7 +164,7 @@ function JoinScreen({ onJoined }: { onJoined: (token: string, info: PlayerInfo) 
 }
 
 function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo: PlayerInfo; onLeave: () => void }) {
-  const { data, loading } = useHeistPoll<PlayerState>(
+  const { data, loading, error: pollError } = useHeistPoll<PlayerState>(
     "/api/heist/state?role=player",
     2000,
     { "x-player-token": token }
@@ -187,7 +187,40 @@ function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo:
     }
   }, [currentPhase, prevPhase]);
 
-  if (loading || !data) {
+  const sessionExpired = data?.session === null || pollError === "Invalid token";
+
+  useEffect(() => {
+    if (sessionExpired) {
+      onLeave();
+    }
+  }, [sessionExpired, onLeave]);
+
+  if (loading && !data && !pollError) {
+    return (
+      <section className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="animate-spin text-accent-green" size={32} />
+      </section>
+    );
+  }
+
+  if (sessionExpired) {
+    return (
+      <section className="flex min-h-[60vh] items-center justify-center px-6">
+        <p className="text-sm text-text-secondary">Session changed. Returning to join screen...</p>
+      </section>
+    );
+  }
+
+  if (pollError && !data) {
+    return (
+      <section className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6">
+        <p className="text-red-400">{pollError}</p>
+        <button onClick={onLeave} className="cursor-pointer text-sm text-text-secondary underline">Rejoin</button>
+      </section>
+    );
+  }
+
+  if (!data) {
     return (
       <section className="flex min-h-[60vh] items-center justify-center">
         <Loader2 className="animate-spin text-accent-green" size={32} />

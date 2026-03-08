@@ -163,8 +163,11 @@ export async function joinLobby(displayName: string) {
 }
 
 export async function getPlayerByToken(token: string) {
-  const player = await prisma.player.findUnique({
-    where: { token },
+  const player = await prisma.player.findFirst({
+    where: {
+      token,
+      session: { endedAt: null },
+    },
     include: { team: true, session: true },
   });
   if (!player) return null;
