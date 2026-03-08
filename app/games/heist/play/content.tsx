@@ -12,6 +12,7 @@ interface PlayerState {
   phase: string;
   phaseLabel: string;
   phaseOpen: boolean;
+  joinOpen?: boolean;
   player?: {
     playerCode: string;
     displayName?: string;
@@ -102,6 +103,7 @@ function JoinScreen({ onJoined }: { onJoined: (token: string, info: PlayerInfo) 
 
   const { data } = useHeistPoll<PlayerState>("/api/heist/state?role=player", 3000);
   const noSession = data?.session === null;
+  const lobbyOpen = data?.joinOpen ?? false;
 
   async function handleJoin() {
     if (!name.trim()) return;
@@ -135,6 +137,8 @@ function JoinScreen({ onJoined }: { onJoined: (token: string, info: PlayerInfo) 
 
         {noSession ? (
           <p className="mt-4 text-text-secondary">Waiting for the game to start...</p>
+        ) : !lobbyOpen ? (
+          <p className="mt-4 text-text-secondary">Game in progress. Wait for the next lobby to open.</p>
         ) : (
           <>
             <p className="mb-8 text-text-secondary">Enter your name to join</p>
@@ -174,6 +178,7 @@ function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo:
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [auditChoice, setAuditChoice] = useState<"no_audit" | "audit_someone">("no_audit");
   const [auditTarget, setAuditTarget] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [prevPhase, setPrevPhase] = useState<string | null>(null);
 
   const currentPhase = data?.phase;
@@ -184,6 +189,7 @@ function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo:
       setSelectedAmount(null);
       setAuditChoice("no_audit");
       setAuditTarget("");
+      setSubmitError(null);
     }
   }, [currentPhase, prevPhase]);
 
@@ -247,23 +253,37 @@ function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo:
   async function handleContribution() {
     if (selectedAmount === null) return;
     setSubmitting(true);
+    setSubmitError(null);
     try {
       const res = await submitAction({ amount: selectedAmount }, token);
-      if (res.ok) setJustSubmitted(true);
-    } catch { /* ignore */ } finally {
+      if (res.ok) {
+        setJustSubmitted(true);
+      } else {
+        setSubmitError(res.error ?? "Failed to submit contribution");
+      }
+    } catch {
+      setSubmitError("Connection failed");
+    } finally {
       setSubmitting(false);
     }
   }
 
   async function handleAudit() {
     setSubmitting(true);
+    setSubmitError(null);
     try {
       const res = await submitAction({
         auditChoice,
         targetPlayerCode: auditChoice === "audit_someone" ? auditTarget : undefined,
       }, token);
-      if (res.ok) setJustSubmitted(true);
-    } catch { /* ignore */ } finally {
+      if (res.ok) {
+        setJustSubmitted(true);
+      } else {
+        setSubmitError(res.error ?? "Failed to submit audit");
+      }
+    } catch {
+      setSubmitError("Connection failed");
+    } finally {
       setSubmitting(false);
     }
   }
@@ -340,6 +360,7 @@ function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo:
                   >
                     {submitting ? "Submitting..." : "Confirm"}
                   </button>
+                  {submitError && <p className="mt-3 text-center text-sm text-red-400">{submitError}</p>}
                 </div>
               )}
             </motion.div>
@@ -393,6 +414,7 @@ function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo:
                   >
                     {submitting ? "Submitting..." : "Confirm"}
                   </button>
+                  {submitError && <p className="mt-3 text-center text-sm text-red-400">{submitError}</p>}
                 </div>
               )}
             </motion.div>

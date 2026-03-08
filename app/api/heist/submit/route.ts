@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  // Auth: accept either token or playerCode
   let playerCode: string;
   const token = request.headers.get('x-player-token');
   if (token) {
@@ -28,8 +27,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
     playerCode = playerInfo.playerCode;
-  } else if (body.playerCode) {
-    playerCode = body.playerCode as string;
   } else {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   }

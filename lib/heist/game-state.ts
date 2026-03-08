@@ -77,48 +77,49 @@ export async function createSession(
   name: string,
   teamsInput: { teamCode: string; teamName: string; size: number }[]
 ) {
-  // End any existing active sessions
-  await prisma.session.updateMany({
-    where: { endedAt: null },
-    data: { endedAt: new Date() },
-  });
+  const createdSessionId = await prisma.$transaction(async (tx) => {
+    await tx.session.updateMany({
+      where: { endedAt: null },
+      data: { endedAt: new Date() },
+    });
 
-  const session = await prisma.session.create({
-    data: {
-      name,
-      phase: 'lobby',
-      phaseOpen: true,
-      config: JSON.parse(JSON.stringify(DEFAULT_CONFIG)),
-    },
-  });
-
-  // Create teams and empty player slots
-  for (let i = 0; i < teamsInput.length; i++) {
-    const { teamCode, teamName, size } = teamsInput[i];
-    const team = await prisma.team.create({
+    const session = await tx.session.create({
       data: {
-        sessionId: session.id,
-        teamCode,
-        teamName,
-        color: TEAM_COLORS[i % TEAM_COLORS.length],
-        maxSize: size,
-        sortOrder: i,
+        name,
+        phase: 'lobby',
+        phaseOpen: true,
+        config: JSON.parse(JSON.stringify(DEFAULT_CONFIG)),
       },
     });
 
-    // Create empty player slots (displayName null = open slot)
-    for (let j = 1; j <= size; j++) {
-      await prisma.player.create({
+    for (let i = 0; i < teamsInput.length; i++) {
+      const { teamCode, teamName, size } = teamsInput[i];
+      const team = await tx.team.create({
         data: {
           sessionId: session.id,
-          teamId: team.id,
-          playerCode: `${teamCode}${j}`,
+          teamCode,
+          teamName,
+          color: TEAM_COLORS[i % TEAM_COLORS.length],
+          maxSize: size,
+          sortOrder: i,
         },
       });
-    }
-  }
 
-  return getActiveSession();
+      for (let j = 1; j <= size; j++) {
+        await tx.player.create({
+          data: {
+            sessionId: session.id,
+            teamId: team.id,
+            playerCode: `${teamCode}${j}`,
+          },
+        });
+      }
+    }
+
+    return session.id;
+  });
+
+  return getSessionById(createdSessionId);
 }
 
 export async function joinLobby(displayName: string) {

@@ -98,6 +98,7 @@ export async function GET(request: NextRequest) {
       phase: session.phase,
       phaseLabel: PHASE_LABELS[session.phase],
       phaseOpen: session.phaseOpen,
+      joinOpen: session.phase === 'lobby',
     });
   }
 
