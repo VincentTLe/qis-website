@@ -5,6 +5,9 @@ export const DEFAULT_CONFIG: GameConfig = {
   multiplier: 1.5,
   auditCost: 1000,
   auditDamage: 3000,
+  auditSuccessThreshold: 6000,
+  auditSuccessBonus: 500,
+  auditTeamBonus: 10000,
   allowedContributions: [0, 2000, 4000, 6000, 8000, 10000],
 };
 

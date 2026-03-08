@@ -183,6 +183,16 @@ export async function getPlayerByToken(token: string) {
 export async function advancePhase() {
   const session = await prisma.session.findFirst({ where: { endedAt: null } });
   if (!session) throw new Error('No active session');
+
+   if (session.phase === 'lobby') {
+    const openSlots = await prisma.player.count({
+      where: { sessionId: session.id, displayName: null },
+    });
+    if (openSlots > 0) {
+      throw new Error('Cannot start game until all lobby slots are filled');
+    }
+  }
+
   const idx = PHASE_ORDER.indexOf(session.phase as Phase);
   if (idx >= PHASE_ORDER.length - 1) throw new Error('Already at final phase');
   const newPhase = PHASE_ORDER[idx + 1];

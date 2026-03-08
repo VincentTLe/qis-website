@@ -12,6 +12,9 @@ export interface GameConfig {
   multiplier: number;
   auditCost: number;
   auditDamage: number;
+  auditSuccessThreshold: number;
+  auditSuccessBonus: number;
+  auditTeamBonus: number;
   allowedContributions: number[];
 }
 
@@ -66,7 +69,11 @@ export interface PlayerRoundScore {
   baseRoundWealth: number;
   auditCostPaid: number;
   auditDamageReceived: number;
+  auditRedistributionReceived: number;
+  auditTeamBonusReceived: number;
+  auditBonusReceived: number;
   auditsReceived: number;
+  successfulAudits: number;
   netRoundWealth: number;
 }
 

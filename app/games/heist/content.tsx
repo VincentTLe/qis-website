@@ -114,8 +114,8 @@ export function HeistLanding() {
               <div>
                 <h3 className="mb-1 font-semibold text-text-primary">Audit Phases (x2)</h3>
                 <p className="text-sm text-text-secondary">
-                  After Rounds 2 and 3, you can audit a teammate. It costs you $1,000 but deals $3,000 damage.
-                  Use it to punish free-riders — or target the leader.
+                  After Rounds 2 and 3, you can audit a teammate. If they gave under $6,000, they lose $3,000,
+                  the rest of the team splits a $10,000 bonus, and the auditor earns an extra $500.
                 </p>
               </div>
             </div>

@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
 
   const team = session.teams.find(t => t.id === player.teamId)!;
   const teammates = session.players
-    .filter(p => p.teamId === team.id && p.playerCode !== player.playerCode)
+    .filter(p => p.teamId === team.id && p.playerCode !== player.playerCode && p.displayName)
     .map(p => ({ playerCode: p.playerCode, displayName: p.displayName }));
 
   const mySubmissions = session.submissions.filter(s => s.playerCode === player.playerCode);

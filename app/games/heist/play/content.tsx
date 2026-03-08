@@ -323,7 +323,8 @@ function GameScreen({ token, playerInfo, onLeave }: { token: string; playerInfo:
               ) : (
                 <div className="glass-card rounded-xl p-6">
                   <p className="mb-1 text-center text-sm text-text-secondary">Audit costs you <span className="font-bold text-red-400">$1,000</span></p>
-                  <p className="mb-6 text-center text-sm text-text-secondary">Deals <span className="font-bold text-red-400">$3,000</span> damage to target</p>
+                  <p className="text-center text-sm text-text-secondary">If the target gave under <span className="font-bold text-accent-blue">$6,000</span>, they lose <span className="font-bold text-red-400">$3,000</span>.</p>
+                  <p className="mb-6 text-center text-sm text-text-secondary">The rest of your team splits <span className="font-bold text-accent-green">$10,000</span>, and you gain <span className="font-bold text-accent-green">$500</span>.</p>
                   <div className="mb-4 flex gap-3">
                     <button
                       onClick={() => setAuditChoice("no_audit")}
